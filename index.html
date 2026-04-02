@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Stationery Store Manager</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background: #f5f5f5; }
+    h1 { text-align: center; }
+    .container { max-width: 1000px; margin: auto; }
+    input, button { padding: 8px; margin: 5px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #ddd; }
+    .card { background: white; padding: 15px; margin: 10px 0; border-radius: 8px; }
+  </style>
+</head>
+<body><h1>📚 Stationery Store Manager</h1><div class="container">  <div class="card">
+    <h3>Add Stock</h3>
+    <input id="itemName" placeholder="Item Name">
+    <input id="quantity" type="number" placeholder="Quantity">
+    <input id="cost" type="number" placeholder="Cost Price">
+    <input id="price" type="number" placeholder="Selling Price">
+    <button onclick="addStock()">Add</button>
+  </div>  <div class="card">
+    <h3>Sell Item</h3>
+    <input id="sellName" placeholder="Item Name">
+    <input id="sellQty" type="number" placeholder="Quantity">
+    <button onclick="sellItem()">Sell</button>
+  </div>  <div class="card">
+    <h3>Add Expense</h3>
+    <input id="expenseName" placeholder="Expense Name">
+    <input id="expenseAmount" type="number" placeholder="Amount">
+    <button onclick="addExpense()">Add</button>
+  </div>  <div class="card">
+    <h3>Dashboard</h3>
+    <p>Total Sales: ₹<span id="sales">0</span></p>
+    <p>Total Expenses: ₹<span id="expenses">0</span></p>
+    <p>Profit: ₹<span id="profit">0</span></p>
+    <p>Balance: ₹<span id="balance">0</span></p>
+  </div>  <div class="card">
+    <h3>Stock List</h3>
+    <table id="stockTable">
+      <tr><th>Item</th><th>Qty</th><th>Cost</th><th>Price</th></tr>
+    </table>
+  </div></div><script>
+let stock = [];
+let totalSales = 0;
+let totalExpenses = 0;
+let totalCostSold = 0;
+
+function addStock() {
+  const name = document.getElementById('itemName').value;
+  const qty = parseInt(document.getElementById('quantity').value);
+  const cost = parseFloat(document.getElementById('cost').value);
+  const price = parseFloat(document.getElementById('price').value);
+
+  stock.push({ name, qty, cost, price });
+  renderStock();
+}
+
+function sellItem() {
+  const name = document.getElementById('sellName').value;
+  const qty = parseInt(document.getElementById('sellQty').value);
+
+  let item = stock.find(i => i.name === name);
+  if (item && item.qty >= qty) {
+    item.qty -= qty;
+    totalSales += item.price * qty;
+    totalCostSold += item.cost * qty;
+  } else {
+    alert('Not enough stock!');
+  }
+
+  renderStock();
+  updateDashboard();
+}
+
+function addExpense() {
+  const amount = parseFloat(document.getElementById('expenseAmount').value);
+  totalExpenses += amount;
+  updateDashboard();
+}
+
+function renderStock() {
+  const table = document.getElementById('stockTable');
+  table.innerHTML = '<tr><th>Item</th><th>Qty</th><th>Cost</th><th>Price</th></tr>';
+
+  stock.forEach(item => {
+    table.innerHTML += `<tr>
+      <td>${item.name}</td>
+      <td>${item.qty}</td>
+      <td>${item.cost}</td>
+      <td>${item.price}</td>
+    </tr>`;
+  });
+}
+
+function updateDashboard() {
+  const profit = totalSales - (totalCostSold + totalExpenses);
+  const balance = totalSales - totalExpenses;
+
+  document.getElementById('sales').innerText = totalSales;
+  document.getElementById('expenses').innerText = totalExpenses;
+  document.getElementById('profit').innerText = profit;
+  document.getElementById('balance').innerText = balance;
+}
+</script></body>
+</html>
